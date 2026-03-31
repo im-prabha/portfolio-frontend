@@ -9,7 +9,7 @@
 //    with your Render backend URL after deploying.
 // ─────────────────────────────────────────────────────
 
-const PRODUCTION_API = "https://your-portfolio-backend.onrender.com";
+const PRODUCTION_API = "https://portfolio-backend-6idp.onrender.com";
 // ↑ Replace this with your actual Render URL after deploying the backend.
 //   e.g. "https://portfolio-backend-xyz.onrender.com"
 
