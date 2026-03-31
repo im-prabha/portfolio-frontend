@@ -26,11 +26,8 @@
 <div class="page-hero">
   <div class="section-label">Get In Touch</div>
   <h1>Contact</h1>
-  <p>Open to opportunities, collaborations & conversations</p>
+  <p>Open to opportunities, collaborations &amp; conversations</p>
 </div>
-
-<!-- TOAST -->
-<div id="toast" class="toast"></div>
 
 <section class="contact-section">
   <div class="contact-solo">
@@ -47,36 +44,14 @@
   <p>© 2026 Prabhakaran K &nbsp;·&nbsp; <a href="index.html">← Back Home</a></p>
 </footer>
 
+<!-- config.js MUST load before script.js — sets window.API_BASE to Render URL -->
+<script src="config.js"></script>
 <script src="script.js"></script>
 <script>
   function toggleNav() {
     document.getElementById("navLinks").classList.toggle("open");
   }
-
-  function showToast(msg, type = "success") {
-    const t = document.getElementById("toast");
-    t.innerText = msg;
-    t.className = "toast show " + type;
-    setTimeout(() => t.className = "toast", 3500);
-  }
-
-  function sendMessage() {
-    const name    = document.getElementById("cfName").value.trim();
-    const email   = document.getElementById("cfEmail").value.trim();
-    const subject = document.getElementById("cfSubject").value.trim();
-    const message = document.getElementById("cfMessage").value.trim();
-
-    if (!name || !email || !message) {
-      showToast("Please fill in all required fields ❗", "error");
-      return;
-    }
-
-    // Opens user's mail client with pre-filled message
-    const mailto = `mailto:prabhakaran@example.com?subject=${encodeURIComponent(subject || "Portfolio Contact")}&body=${encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\n" + message)}`;
-    window.location.href = mailto;
-
-    showToast("Opening your mail client... ✅");
-  }
 </script>
+
 </body>
 </html>
