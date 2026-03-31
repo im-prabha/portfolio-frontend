@@ -1,21 +1,20 @@
 // ─────────────────────────────────────────────────────
 //  config.js  —  loaded by every HTML page (public + admin)
 //
-//  HOW IT WORKS:
-//  • During local development, window.PORTFOLIO_API is not set,
-//    so it falls back to http://localhost:5000
-//  • On Vercel, you set an environment variable VITE_API_URL
-//    OR you can just edit the PRODUCTION_API line below
-//    with your Render backend URL after deploying.
+//  Uses an IIFE so no variable leaks into global scope.
+//  Only sets window.API_BASE — never declares a top-level
+//  const/let/var named API, so no redeclaration errors.
+//
+//  Local dev  (localhost / 127.0.0.1) → http://localhost:5000
+//  Production (any other hostname)    → your Render URL below
 // ─────────────────────────────────────────────────────
 
-const PRODUCTION_API = "https://portfolio-backend-6idp.onrender.com";
-// ↑ Replace this with your actual Render URL after deploying the backend.
-//   e.g. "https://portfolio-backend-xyz.onrender.com"
+(function () {
+  var PRODUCTION_API = "https://portfolio-backend-6idp.onrender.com";
 
-const API = (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1")
-  ? PRODUCTION_API
-  : "http://localhost:5000";
+  var isLocal =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
 
-// Make it globally available
-window.API_BASE = API;
+  window.API_BASE = isLocal ? "http://localhost:5000" : PRODUCTION_API;
+})();

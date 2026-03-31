@@ -153,7 +153,7 @@
 
 <script src="config.js"></script>
 <script>
-const API = "http://localhost:5000";
+const API = window.API_BASE || "http://localhost:5000";
 
 function switchTo(id) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
