@@ -1,0 +1,13 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    { "src": "/projects",     "dest": "/projects.html"     },
+    { "src": "/certificates", "dest": "/certificates.html" },
+    { "src": "/education",    "dest": "/education.html"    },
+    { "src": "/internships",  "dest": "/internships.html"  },
+    { "src": "/contact",      "dest": "/contact.html"      },
+    { "src": "/admin",        "dest": "/admin-login.html"  },
+    { "src": "/admin-dashboard", "dest": "/admin-dashboard.html" }
+  ]
+}

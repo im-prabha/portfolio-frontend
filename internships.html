@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internships — Prabhakaran K</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<nav>
+  <h2>PK.</h2>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">☰</button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="certificates.html">Certificates</a>
+    <a href="education.html">Education</a>
+    <a href="internships.html" class="active">Internships</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+<div class="page-hero">
+  <div class="section-label">Work Experience</div>
+  <h1>Internships</h1>
+  <p>Real-world roles, responsibilities & impact</p>
+</div>
+
+<section>
+  <div id="internships" class="timeline stagger"></div>
+</section>
+<footer>
+  <p>&#169; 2026 Prabhakaran K &nbsp;&middot;&nbsp; <a href="index.html">&#8592; Back Home</a></p>
+</footer>
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script>
+function toggleNav(){document.getElementById("navLinks").classList.toggle("open");}
+</script>
+</body>
+</html>

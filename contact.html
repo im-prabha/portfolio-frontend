@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Prabhakaran K</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<nav>
+  <h2>PK.</h2>
+  <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="certificates.html">Certificates</a>
+    <a href="education.html">Education</a>
+    <a href="internships.html">Internships</a>
+    <a href="contact.html" class="active">Contact</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="section-label">Get In Touch</div>
+  <h1>Contact</h1>
+  <p>Open to opportunities, collaborations & conversations</p>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<section class="contact-section">
+  <div class="contact-solo">
+    <h3 class="contact-sub-title">Find Me Online</h3>
+    <div id="social" class="social-cards"></div>
+    <div class="contact-note" style="margin-top:20px;">
+      <p>Based in <strong>Chennai, Tamil Nadu 🇮🇳</strong></p>
+      <p>Open to: Full-time roles, internships &amp; freelance</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Prabhakaran K &nbsp;·&nbsp; <a href="index.html">← Back Home</a></p>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  function toggleNav() {
+    document.getElementById("navLinks").classList.toggle("open");
+  }
+
+  function showToast(msg, type = "success") {
+    const t = document.getElementById("toast");
+    t.innerText = msg;
+    t.className = "toast show " + type;
+    setTimeout(() => t.className = "toast", 3500);
+  }
+
+  function sendMessage() {
+    const name    = document.getElementById("cfName").value.trim();
+    const email   = document.getElementById("cfEmail").value.trim();
+    const subject = document.getElementById("cfSubject").value.trim();
+    const message = document.getElementById("cfMessage").value.trim();
+
+    if (!name || !email || !message) {
+      showToast("Please fill in all required fields ❗", "error");
+      return;
+    }
+
+    // Opens user's mail client with pre-filled message
+    const mailto = `mailto:prabhakaran@example.com?subject=${encodeURIComponent(subject || "Portfolio Contact")}&body=${encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\n" + message)}`;
+    window.location.href = mailto;
+
+    showToast("Opening your mail client... ✅");
+  }
+</script>
+</body>
+</html>

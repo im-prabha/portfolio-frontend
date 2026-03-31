@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prabhakaran K — Portfolio</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<nav>
+  <h2>PK.</h2>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">☰</button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" class="active">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="certificates.html">Certificates</a>
+    <a href="education.html">Education</a>
+    <a href="internships.html">Internships</a>
+    <a href="contact.html">Contact</a>
+    <a href="admin-login.html" class="nav-admin-btn">Admin ↗</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="fade-in">
+  <div class="hero-eyebrow">👋 Hello, I'm</div>
+  <h1>Prabhakaran K</h1>
+  <p class="hero-role" style="color:var(--muted);font-size:1rem;">
+    <span style="color:#a5b4fc;font-weight:500;">Full Stack Developer</span>
+    &nbsp;·&nbsp; Java &nbsp;·&nbsp; MERN Stack
+  </p>
+  <div class="hero-tags">
+    <span class="hero-tag">Node.js</span>
+    <span class="hero-tag">React</span>
+    <span class="hero-tag">MongoDB</span>
+    <span class="hero-tag">Express</span>
+    <span class="hero-tag">Java</span>
+  </div>
+  <div class="hero-btns">
+    <button class="btn" onclick="downloadResume()">⬇ Download Resume</button>
+    <button class="btn btn-outline-hero" onclick="location.href='contact.html'">Get in Touch</button>
+  </div>
+</header>
+
+<!-- CAREER SUMMARY -->
+<section>
+  <div class="section-label">About Me</div>
+  <h2 class="section-title">Career Summary</h2>
+  <div id="career" class="career-summary-box"></div>
+</section>
+
+<!-- SKILLS -->
+<section>
+  <div class="section-label">What I Know</div>
+  <h2 class="section-title">Skills</h2>
+  <div id="skills" class="skills-grid stagger"></div>
+</section>
+
+<!-- EXPLORE -->
+<section>
+  <div class="section-label">Explore</div>
+  <h2 class="section-title">More About Me</h2>
+  <div class="explore-grid stagger">
+    <div class="explore-card" onclick="location.href='projects.html'">
+      <div class="explore-icon">⬡</div>
+      <div><h3>Projects</h3><p>Full-stack apps & side projects</p></div>
+      <span class="explore-arrow">→</span>
+    </div>
+    <div class="explore-card" onclick="location.href='internships.html'">
+      <div class="explore-icon">◈</div>
+      <div><h3>Internships</h3><p>Real-world work experience</p></div>
+      <span class="explore-arrow">→</span>
+    </div>
+    <div class="explore-card" onclick="location.href='education.html'">
+      <div class="explore-icon">◇</div>
+      <div><h3>Education</h3><p>Academic background & degrees</p></div>
+      <span class="explore-arrow">→</span>
+    </div>
+    <div class="explore-card" onclick="location.href='certificates.html'">
+      <div class="explore-icon">✦</div>
+      <div><h3>Certificates</h3><p>Verified skills & achievements</p></div>
+      <span class="explore-arrow">→</span>
+    </div>
+    <div class="explore-card" onclick="location.href='contact.html'">
+      <div class="explore-icon">◉</div>
+      <div><h3>Contact</h3><p>Let's connect & collaborate</p></div>
+      <span class="explore-arrow">→</span>
+    </div>
+  </div>
+</section>
+
+<!-- RESUME VIEWER — auto-shown if resume uploaded -->
+<section id="resumeViewerSection" style="display:none;">
+  <div class="section-label">My Resume</div>
+  <h2 class="section-title">Resume</h2>
+  <div class="resume-viewer-wrap">
+    <div class="resume-viewer-toolbar">
+      <span class="resume-viewer-label">📄 Prabhakaran K — Resume</span>
+      <a href="http://localhost:5000/resume/download" class="btn resume-dl-btn" download>⬇ Download</a>
+    </div>
+    <iframe id="resumeFrame" src="" class="resume-iframe" title="Resume Viewer"></iframe>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Prabhakaran K &nbsp;·&nbsp; Built with ❤️ &nbsp;·&nbsp;
+    <a href="admin-login.html">Admin</a>
+  </p>
+</footer>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

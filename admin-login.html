@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — PK.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background: #05080f;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .bg { position:fixed; inset:0; pointer-events:none; overflow:hidden; }
+    .blob { position:absolute; border-radius:50%; filter:blur(80px); opacity:0.15; animation: drift 14s ease-in-out infinite alternate; }
+    .b1 { width:500px;height:500px;background:#6366f1;top:-100px;left:-100px; }
+    .b2 { width:360px;height:360px;background:#8b5cf6;bottom:-80px;right:-60px;animation-delay:-5s;animation-duration:11s; }
+    .b3 { width:240px;height:240px;background:#22d3ee;top:45%;left:58%;opacity:0.07;animation-delay:-9s; }
+    @keyframes drift { from{transform:translate(0,0)} to{transform:translate(28px,18px)} }
+    .bg-grid { position:absolute;inset:0; background: radial-gradient(circle,rgba(255,255,255,0.05) 1px,transparent 1px); background-size:36px 36px; }
+    .wrap { position:relative;z-index:10;width:100%;max-width:420px;padding:16px;animation: cardIn 0.65s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes cardIn { from{opacity:0;transform:translateY(24px) scale(0.97)} to{opacity:1;transform:none} }
+    .card { background:rgba(13,21,40,0.88);border:1px solid rgba(255,255,255,0.09);border-radius:22px;padding:38px 34px 34px;backdrop-filter:blur(24px);box-shadow:0 0 0 1px rgba(99,102,241,0.07),0 28px 70px rgba(0,0,0,0.55); }
+    .brand { display:flex;align-items:center;gap:11px;margin-bottom:30px; }
+    .mark { width:38px;height:38px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:0.92rem;color:#fff;box-shadow:0 4px 12px rgba(99,102,241,0.4); }
+    .brand-name { font-family:'Syne',sans-serif;font-size:0.98rem;font-weight:800;color:#fff;line-height:1; }
+    .brand-sub  { font-size:0.7rem;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px; }
+    .title    { font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;color:#fff;margin-bottom:5px;letter-spacing:-0.3px; }
+    .subtitle { font-size:0.84rem;color:#64748b;margin-bottom:24px; }
+    .msg { font-size:0.79rem;font-weight:600;padding:10px 13px;border-radius:9px;margin-bottom:14px;display:none; }
+    .msg.show   { display:block;animation:shake 0.3s ease; }
+    .msg.error  { color:#f87171;background:rgba(239,68,68,0.09);border:1px solid rgba(239,68,68,0.22); }
+    .msg.ok     { color:#4ade80;background:rgba(74,222,128,0.09);border:1px solid rgba(74,222,128,0.22); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+    .field { margin-bottom:15px; }
+    .field label { display:block;font-size:0.71rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;margin-bottom:7px; }
+    .inp-wrap { position:relative; }
+    .inp-icon { position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:0.9rem;pointer-events:none;opacity:0.35;transition:opacity 0.2s; }
+    .inp-wrap:focus-within .inp-icon { opacity:0.75; }
+    input { width:100%;padding:12px 42px 12px 40px;border-radius:11px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.04);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.91rem;outline:none;transition:border-color 0.2s,background 0.2s,box-shadow 0.2s; }
+    input:focus { border-color:#6366f1;background:rgba(99,102,241,0.06);box-shadow:0 0 0 3px rgba(99,102,241,0.13); }
+    input::placeholder { color:rgba(255,255,255,0.17); }
+    .pw-btn { position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#64748b;cursor:pointer;font-size:0.88rem;padding:4px 5px;line-height:1;transition:color 0.2s;border-radius:5px; }
+    .pw-btn:hover { color:#a5b4fc; }
+    .forgot { display:block;text-align:right;font-size:0.78rem;color:#475569;cursor:pointer;margin-top:-6px;margin-bottom:16px;transition:color 0.2s;background:none;border:none;font-family:'DM Sans',sans-serif;width:100%; }
+    .forgot:hover { color:#a5b4fc; }
+    .submit-btn { width:100%;padding:13px;border:none;border-radius:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.91rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#6366f1,#8b5cf6);transition:all 0.2s;overflow:hidden;margin-top:4px; }
+    .submit-btn:hover:not(:disabled) { transform:translateY(-2px);box-shadow:0 10px 28px rgba(99,102,241,0.42); }
+    .submit-btn:disabled { opacity:0.65;cursor:not-allowed;transform:none; }
+    .btn-inner { display:flex;align-items:center;justify-content:center;gap:8px; }
+    .spinner { display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .view { display:none; }
+    .view.active { display:block; }
+    .bottom-row { text-align:center;margin-top:20px;font-size:0.8rem;color:#475569; }
+    .switch-btn { background:none;border:none;color:#6366f1;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;transition:color 0.2s; }
+    .switch-btn:hover { color:#a5b4fc; }
+    .back-link { display:block;text-align:center;margin-top:18px;font-size:0.79rem;color:#475569;text-decoration:none;transition:color 0.2s; }
+    .back-link:hover { color:#a5b4fc; }
+  </style>
+</head>
+<body>
+<div class="bg">
+  <div class="bg-grid"></div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <div class="brand">
+      <div class="mark">PK</div>
+      <div><div class="brand-name">Prabhakaran K</div><div class="brand-sub">Portfolio Admin</div></div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="view active" id="viewLogin">
+      <h2 class="title">Welcome back</h2>
+      <p class="subtitle">Sign in to manage your portfolio</p>
+      <div class="msg error" id="loginErr"></div>
+      <div class="field">
+        <label>Username</label>
+        <div class="inp-wrap">
+          <span class="inp-icon">👤</span>
+          <input type="text" id="loginUser" placeholder="Your username" autocomplete="username"
+            onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="inp-wrap">
+          <span class="inp-icon">🔒</span>
+          <input type="password" id="loginPass" placeholder="Your password" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doLogin()">
+          <button class="pw-btn" type="button" id="toggleLogin" onclick="togglePw('loginPass','toggleLogin')">👁</button>
+        </div>
+      </div>
+      <button class="forgot" type="button" onclick="switchTo('viewReset')">Forgot password?</button>
+      <button class="submit-btn" id="loginBtn" type="button" onclick="doLogin()">
+        <div class="btn-inner"><span id="loginTxt">Sign In →</span><div class="spinner" id="loginSpin"></div></div>
+      </button>
+      <a href="index.html" class="back-link">← Back to Portfolio</a>
+    </div>
+
+    <!-- RESET -->
+    <div class="view" id="viewReset">
+      <h2 class="title">Reset Password</h2>
+      <p class="subtitle">Enter your credential key to set a new password</p>
+      <div class="msg error" id="resetErr"></div>
+      <div class="msg ok"    id="resetOk"></div>
+      <div class="field">
+        <label>Credential Key</label>
+        <div class="inp-wrap">
+          <span class="inp-icon">🗝</span>
+          <input type="text" id="resetKey" placeholder="Your secret credential key">
+        </div>
+      </div>
+      <div class="field">
+        <label>New Username <span style="font-size:0.65rem;text-transform:none;letter-spacing:0;color:#475569">(optional)</span></label>
+        <div class="inp-wrap">
+          <span class="inp-icon">👤</span>
+          <input type="text" id="resetUser" placeholder="Leave blank to keep current">
+        </div>
+      </div>
+      <div class="field">
+        <label>New Password</label>
+        <div class="inp-wrap">
+          <span class="inp-icon">🔒</span>
+          <input type="password" id="resetPass" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doReset()">
+          <button class="pw-btn" type="button" id="toggleReset" onclick="togglePw('resetPass','toggleReset')">👁</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Confirm New Password</label>
+        <div class="inp-wrap">
+          <span class="inp-icon">🔒</span>
+          <input type="password" id="resetConfirm" placeholder="Repeat new password" onkeydown="if(event.key==='Enter')doReset()">
+        </div>
+      </div>
+      <button class="submit-btn" id="resetBtn" type="button" onclick="doReset()">
+        <div class="btn-inner"><span id="resetTxt">Reset Password →</span><div class="spinner" id="resetSpin"></div></div>
+      </button>
+      <div class="bottom-row">Remembered it? <button class="switch-btn" onclick="switchTo('viewLogin')">Back to Login</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+const API = "http://localhost:5000";
+
+function switchTo(id) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".msg").forEach(m => { m.classList.remove("show"); });
+}
+
+function togglePw(inputId, btnId) {
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (!inp || !btn) return;
+  inp.type = inp.type === "password" ? "text" : "password";
+  btn.textContent = inp.type === "password" ? "👁" : "🙈";
+}
+
+function showMsg(elId, text, type) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.textContent = text;
+  el.className = "msg " + type;
+  void el.offsetWidth;   // force reflow → shake replays
+  el.classList.add("show");
+}
+
+function setBusy(btnId, txtId, spinId, busy) {
+  const btn = document.getElementById(btnId);
+  const txt = document.getElementById(txtId);
+  const sp  = document.getElementById(spinId);
+  if (btn) btn.disabled = busy;
+  if (txt) txt.style.display = busy ? "none" : "inline";
+  if (sp)  sp.style.display  = busy ? "block" : "none";
+}
+
+function doLogin() {
+  const username = (document.getElementById("loginUser").value || "").trim();
+  const password = document.getElementById("loginPass").value || "";
+
+  document.getElementById("loginErr").classList.remove("show");
+
+  if (!username || !password) {
+    showMsg("loginErr", "⚠ Please fill in all fields", "error");
+    return;
+  }
+
+  setBusy("loginBtn","loginTxt","loginSpin", true);
+
+  fetch(API + "/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      window.location.href = "admin-dashboard.html";
+    } else {
+      showMsg("loginErr", "⚠ " + (data.message || "Invalid credentials"), "error");
+    }
+  })
+  .catch(function() {
+    showMsg("loginErr", "⚠ Cannot reach server. Make sure backend is running on port 5000.", "error");
+  })
+  .finally(function() {
+    setBusy("loginBtn","loginTxt","loginSpin", false);
+  });
+}
+
+function doReset() {
+  const key     = (document.getElementById("resetKey").value  || "").trim();
+  const user    = (document.getElementById("resetUser").value || "").trim();
+  const pass    = document.getElementById("resetPass").value    || "";
+  const confirm = document.getElementById("resetConfirm").value || "";
+
+  document.getElementById("resetErr").classList.remove("show");
+  document.getElementById("resetOk").classList.remove("show");
+
+  if (!key)              { showMsg("resetErr", "⚠ Credential key is required",        "error"); return; }
+  if (!pass)             { showMsg("resetErr", "⚠ New password is required",           "error"); return; }
+  if (pass.length < 6)   { showMsg("resetErr", "⚠ Password must be at least 6 chars", "error"); return; }
+  if (pass !== confirm)  { showMsg("resetErr", "⚠ Passwords do not match",             "error"); return; }
+
+  setBusy("resetBtn","resetTxt","resetSpin", true);
+
+  fetch(API + "/auth/reset-with-key", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ credentialKey: key, newUsername: user, newPassword: pass })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.message && data.message.toLowerCase().includes("successfully")) {
+      showMsg("resetOk", "✅ Password reset! Redirecting to login...", "ok");
+      ["resetKey","resetUser","resetPass","resetConfirm"].forEach(function(id) {
+        document.getElementById(id).value = "";
+      });
+      setTimeout(function() { switchTo("viewLogin"); }, 2000);
+    } else {
+      showMsg("resetErr", "⚠ " + (data.message || "Reset failed. Check your credential key."), "error");
+    }
+  })
+  .catch(function() {
+    showMsg("resetErr", "⚠ Cannot reach server.", "error");
+  })
+  .finally(function() {
+    setBusy("resetBtn","resetTxt","resetSpin", false);
+  });
+}
+
+window.onload = function() {
+  if (localStorage.getItem("token")) {
+    window.location.href = "admin-dashboard.html";
+    return;
+  }
+  var el = document.getElementById("loginUser");
+  if (el) el.focus();
+};
+</script>
+</body>
+</html>
