@@ -209,6 +209,7 @@ function doLogin() {
   .then(function(data) {
     if (data.token) {
       localStorage.setItem("token", data.token);
+      if (data.expiresAt) localStorage.setItem("tokenExpiresAt", data.expiresAt);
       window.location.href = "admin-dashboard.html";
     } else {
       showMsg("loginErr", "⚠ " + (data.message || "Invalid credentials"), "error");
@@ -264,8 +265,26 @@ function doReset() {
 }
 
 window.onload = function() {
-  if (localStorage.getItem("token")) {
-    window.location.href = "admin-dashboard.html";
+  var token = localStorage.getItem("token");
+  if (token) {
+    // Verify token is still valid before redirecting
+    fetch(API + "/auth/verify", {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + token }
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.valid) {
+        window.location.href = "admin-dashboard.html";
+      } else {
+        // Token expired or invalid — clear it and show login
+        localStorage.removeItem("token");
+      }
+    })
+    .catch(function() {
+      // Server unreachable — clear token, show login form
+      localStorage.removeItem("token");
+    });
     return;
   }
   var el = document.getElementById("loginUser");

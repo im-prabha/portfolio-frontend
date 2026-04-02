@@ -4,24 +4,43 @@ const API = window.API_BASE || "http://localhost:5000";
 // ── download resume ──
 function downloadResume() { window.open(API + "/resume/download"); }
 
-// ── image modal (public) ──
+// ── image modal — works on both touch and mouse ──
 function openImgModal(src) {
   let modal = document.getElementById("publicImgModal");
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "publicImgModal";
-    modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;animation:fadeIn 0.2s ease;";
+    modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;";
     modal.innerHTML = `
-      <div style="position:relative;max-width:92vw;max-height:92vh;" onclick="event.stopPropagation()">
-        <button onclick="document.getElementById('publicImgModal').style.display='none'"
-          style="position:absolute;top:-14px;right:-14px;width:30px;height:30px;border-radius:50%;background:#1e293b;border:1px solid rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;">✕</button>
-        <img id="publicImgSrc" src="" style="max-width:88vw;max-height:88vh;border-radius:12px;object-fit:contain;display:block;">
+      <div style="position:relative;max-width:min(92vw,720px);width:100%;">
+        <button id="imgModalClose"
+          style="position:absolute;top:-14px;right:-14px;width:32px;height:32px;border-radius:50%;
+                 background:#1e293b;border:1px solid rgba(255,255,255,0.2);color:#fff;cursor:pointer;
+                 font-size:1rem;display:flex;align-items:center;justify-content:center;z-index:1;touch-action:manipulation;">✕</button>
+        <img id="publicImgSrc" src=""
+          style="width:100%;max-height:85vh;border-radius:12px;object-fit:contain;display:block;touch-action:pinch-zoom;">
       </div>`;
-    modal.addEventListener("click", () => modal.style.display = "none");
     document.body.appendChild(modal);
+
+    modal.addEventListener("click",    e => { if (e.target === modal) closeImgModal(); });
+    modal.addEventListener("touchend", e => { if (e.target === modal) closeImgModal(); });
+    document.getElementById("imgModalClose").addEventListener("click",    e => { e.stopPropagation(); closeImgModal(); });
+    document.getElementById("imgModalClose").addEventListener("touchend", e => { e.stopPropagation(); closeImgModal(); });
   }
   document.getElementById("publicImgSrc").src = src;
   modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function closeImgModal() {
+  const m = document.getElementById("publicImgModal");
+  if (m) m.style.display = "none";
+  document.body.style.overflow = "";
+}
+
+function scrollGallery(id, dir) {
+  const el = document.getElementById(id);
+  if (el) el.scrollBy({ left: dir * el.offsetWidth, behavior: "smooth" });
 }
 
 
@@ -38,20 +57,31 @@ function loadProjects() {
     .then(data => {
       container.innerHTML = "";
       if (!data.length) { container.innerHTML = emptyHTML("No projects yet. Check back soon!"); return; }
+
       data.forEach((p, i) => {
         const techBadges = (p.tech || []).map(t => `<span class="badge">${t.trim()}</span>`).join("");
         const imgs = p.images || [];
 
-        // Build image gallery
         let galleryHTML = "";
         if (imgs.length) {
-          const slides = imgs.map(img => `
-            <img src="${img}" class="pc-gallery-img" alt="${p.title}" onclick="openImgModal('${img}')">`).join("");
+          const slides = imgs.map((img, idx) => {
+            const esc = img.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+            return `<img src="${img}" class="pc-gallery-img" alt="${p.title}"
+                      onclick="openImgModal('${esc}')"
+                      ontouchend="event.preventDefault();openImgModal('${esc}')"
+                      style="cursor:pointer;">`;
+          }).join("");
+
           galleryHTML = `
             <div class="pc-gallery">
-              <div class="pc-gallery-inner">${slides}</div>
-              <div class="pc-gallery-overlay">🔍 Click to view</div>
-              ${imgs.length > 1 ? `<div class="pc-img-count">${imgs.length} images</div>` : ""}
+              <div class="pc-gallery-inner" id="gal-${i}">${slides}</div>
+              ${imgs.length > 1
+                ? `<div class="pc-gallery-nav">
+                     <button class="gallery-btn" onclick="scrollGallery('gal-${i}',-1)" aria-label="Prev">&#8249;</button>
+                     <button class="gallery-btn" onclick="scrollGallery('gal-${i}', 1)" aria-label="Next">&#8250;</button>
+                   </div>
+                   <div class="pc-img-count">${imgs.length} photos</div>`
+                : ""}
             </div>`;
         }
 
@@ -62,10 +92,10 @@ function loadProjects() {
           ${galleryHTML}
           <div class="pc-body">
             <div class="pc-top">
-              <div class="pc-icon">⬡</div>
+              <div class="pc-icon">&#11042;</div>
               <div class="pc-links">
-                ${p.github ? `<a href="${p.github}" target="_blank" class="pc-link">GitHub ↗</a>` : ""}
-                ${p.live   ? `<a href="${p.live}"   target="_blank" class="pc-link live">Live ↗</a>` : ""}
+                ${p.github ? `<a href="${p.github}" target="_blank" class="pc-link">GitHub &#8599;</a>` : ""}
+                ${p.live   ? `<a href="${p.live}"   target="_blank" class="pc-link live">Live &#8599;</a>` : ""}
               </div>
             </div>
             <h3>${p.title}</h3>
@@ -85,6 +115,7 @@ function loadProjects() {
 function loadSkills() {
   const container = document.getElementById("skills");
   if (!container) return;
+  container.innerHTML = loadingHTML();
 
   fetch(API + "/skills")
     .then(r => r.json())
@@ -100,7 +131,6 @@ function loadSkills() {
           <div class="sp-bar-bg"><div class="sp-bar-fill" data-w="${s.level}%" style="width:0%"></div></div>`;
         container.appendChild(div);
       });
-      // Animate bars
       requestAnimationFrame(() => {
         setTimeout(() => {
           document.querySelectorAll(".sp-bar-fill").forEach(b => { b.style.width = b.dataset.w; });
@@ -125,21 +155,24 @@ function loadCertificates() {
       container.innerHTML = "";
       if (!data.length) { container.innerHTML = emptyHTML("No certificates yet."); return; }
       data.forEach((c, i) => {
+        const esc = (c.image || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
         const div = document.createElement("div");
         div.className = "cert-card";
         div.style.animationDelay = (i * 0.08) + "s";
         div.innerHTML = `
           ${c.image
-            ? `<div class="cert-thumb-wrap" onclick="openImgModal('${c.image}')">
+            ? `<div class="cert-thumb-wrap"
+                 onclick="openImgModal('${esc}')"
+                 ontouchend="event.preventDefault();openImgModal('${esc}')">
                  <img src="${c.image}" class="cert-thumb" alt="${c.title}">
-                 <div class="cert-thumb-overlay">🔍 View</div>
+                 <div class="cert-thumb-overlay">&#128269; View</div>
                </div>`
-            : `<div class="cert-no-img">🏆</div>`
+            : `<div class="cert-no-img">&#127942;</div>`
           }
           <div class="cert-body">
             <h3>${c.title}</h3>
             <p class="cert-issuer">${c.issuer}</p>
-            ${c.link ? `<a href="${c.link}" target="_blank" class="cert-link-btn">View Certificate ↗</a>` : ""}
+            ${c.link ? `<a href="${c.link}" target="_blank" class="cert-link-btn">View Certificate &#8599;</a>` : ""}
           </div>`;
         container.appendChild(div);
       });
@@ -162,6 +195,7 @@ function loadInternships() {
       container.innerHTML = "";
       if (!data.length) { container.innerHTML = emptyHTML("No internships yet."); return; }
       data.forEach((item, i) => {
+        const esc = (item.certificateImage || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
         const div = document.createElement("div");
         div.className = "timeline-item";
         div.style.animationDelay = (i * 0.1) + "s";
@@ -175,9 +209,11 @@ function loadInternships() {
             <div class="tl-company">${item.company}</div>
             <p class="tl-desc">${item.description || ""}</p>
             ${item.certificateImage
-              ? `<div class="tl-cert-img-wrap" onclick="openImgModal('${item.certificateImage}')">
+              ? `<div class="tl-cert-img-wrap"
+                   onclick="openImgModal('${esc}')"
+                   ontouchend="event.preventDefault();openImgModal('${esc}')">
                    <img src="${item.certificateImage}" class="tl-cert-thumb" alt="Certificate">
-                   <div class="tl-cert-overlay">🏅 View Certificate</div>
+                   <div class="tl-cert-overlay">&#127941; View Certificate</div>
                  </div>`
               : ""}
           </div>`;
@@ -228,18 +264,19 @@ function loadEducation() {
 
 
 // ════════════════════════
-// LOAD CAREER SUMMARY
+// LOAD CAREER
 // ════════════════════════
 function loadCareer() {
   const container = document.getElementById("career");
   if (!container) return;
+  container.innerHTML = loadingHTML();
 
   fetch(API + "/career")
     .then(r => r.json())
     .then(data => {
       const item = Array.isArray(data) ? data[0] : data;
       if (!item || !item.summary) {
-        container.innerHTML = `<p class="empty-state" style="border:none;padding:0;text-align:left;">Career summary coming soon.</p>`;
+        container.innerHTML = `<p style="color:var(--muted);font-size:0.95rem;">Career summary coming soon.</p>`;
         return;
       }
       container.innerHTML = `<p class="career-text">${item.summary}</p>`;
@@ -254,20 +291,25 @@ function loadCareer() {
 function loadSocial() {
   const container = document.getElementById("social");
   if (!container) return;
+  container.innerHTML = loadingHTML();
 
   fetch(API + "/social")
     .then(r => r.json())
     .then(data => {
-      const d = Array.isArray(data) ? data[0] : data;
-      if (!d) return;
       container.innerHTML = "";
+      const d = Array.isArray(data) ? data[0] : data;
+      if (!d) { container.innerHTML = emptyHTML("No links added yet."); return; }
+
       const links = [
-        { label:"LinkedIn", icon:"in", href:d.linkedin,                         color:"#0a66c2" },
-        { label:"GitHub",   icon:"gh", href:d.github,                           color:"#6e5494" },
-        { label:"Email",    icon:"@",  href:d.email ? `mailto:${d.email}` : "", color:"#6366f1" },
+        { label: "LinkedIn", icon: "in", href: d.linkedin,                         color: "#0a66c2" },
+        { label: "GitHub",   icon: "gh", href: d.github,                           color: "#6e5494" },
+        { label: "Email",    icon: "@",  href: d.email ? `mailto:${d.email}` : "", color: "#6366f1" },
       ];
+
+      let added = 0;
       links.forEach(l => {
         if (!l.href) return;
+        added++;
         const a = document.createElement("a");
         a.className = "social-card-link";
         a.href = l.href;
@@ -275,21 +317,25 @@ function loadSocial() {
         a.innerHTML = `
           <span class="sc-icon" style="background:${l.color}22;color:${l.color}">${l.icon}</span>
           <span class="sc-label">${l.label}</span>
-          <span class="sc-arrow">↗</span>`;
+          <span class="sc-arrow">&#8599;</span>`;
         container.appendChild(a);
       });
+
+      if (!added) container.innerHTML = emptyHTML("No links added yet.");
     })
-    .catch(err => console.error("Social:", err));
+    .catch(() => { if (container) container.innerHTML = emptyHTML("Could not load links."); });
 }
 
 
 // ════════════════════════
-// RESUME VIEWER (index)
+// RESUME VIEWER
 // ════════════════════════
 function loadResumeViewer() {
   const section = document.getElementById("resumeViewerSection");
   const frame   = document.getElementById("resumeFrame");
+  const dlBtn   = document.querySelector(".resume-dl-btn");
   if (!section || !frame) return;
+  if (dlBtn) dlBtn.href = API + "/resume/download";
 
   fetch(API + "/resume/exists")
     .then(r => r.json())
@@ -307,17 +353,17 @@ function loadResumeViewer() {
 // HELPERS
 // ════════════════════════
 function loadingHTML() {
-  return `<div class="loading-row"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>`;
+  return `<div class="loading-row">
+    <span class="loading-dot"></span>
+    <span class="loading-dot"></span>
+    <span class="loading-dot"></span>
+  </div>`;
 }
 
 function emptyHTML(msg) {
   return `<p class="empty-state">${msg}</p>`;
 }
 
-
-// ════════════════════════
-// NAV TOGGLE (mobile)
-// ════════════════════════
 function toggleNav() {
   document.getElementById("navLinks")?.classList.toggle("open");
 }
@@ -335,13 +381,11 @@ window.onload = function () {
   else if (path.includes("internships"))  loadInternships();
   else if (path.includes("contact"))      loadSocial();
   else {
-    // index.html
     loadCareer();
     loadSkills();
     loadResumeViewer();
   }
 
-  // active nav link
   document.querySelectorAll(".nav-links a").forEach(a => {
     if (a.href === location.href) a.classList.add("active");
   });
